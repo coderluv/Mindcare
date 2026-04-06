@@ -1,4 +1,4 @@
-# 🧠 Calvira — AI Mental Health Companion
+# 🧠 Calvira — Mental Health Support Platform
 
 > A Caring Voice Chatbot for Private Mental Health Support and Medical Guidance  
 > Built by **Lakshya Lathi** | Engineering College Ajmer
