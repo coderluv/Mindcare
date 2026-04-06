@@ -160,7 +160,7 @@ GET  /dashboard/stats      Stats summary
 
 ## 📝 Notes
 
-- The database (`guardian.db`) is created automatically on first run
+- The database (`calvira.db`) is created automatically on first run
 - All passwords are hashed with bcrypt — never stored in plain text
 - JWT tokens expire after 7 days
 - Crisis detection uses keyword matching on user messages
