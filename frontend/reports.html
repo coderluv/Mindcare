@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Reports — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.report-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; margin-bottom: 1.5rem; transition: border-color 0.2s; }
+.report-card:hover { border-color: var(--border2); }
+.report-week { font-size: 0.78rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.report-summary { font-size: 0.93rem; line-height: 1.75; color: var(--text); margin: 1rem 0; }
+.report-stats { display: flex; gap: 20px; flex-wrap: wrap; padding: 1rem; background: var(--glass2); border-radius: var(--radius-sm); margin-top: 1rem; }
+.report-stat { text-align: center; }
+.report-stat-val { font-size: 1.5rem; font-weight: 700; font-family: var(--serif); }
+.report-stat-lbl { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.current-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; margin-left: 10px; }
+.generate-banner { background: linear-gradient(135deg, rgba(94,234,212,0.08), rgba(129,140,248,0.06)); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 2rem; text-align: center; margin-bottom: 2rem; }
+.generate-banner h3 { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 0.5rem; }
+.generate-banner p { color: var(--text2); margin-bottom: 1.2rem; font-size: 0.9rem; }
+.chart-wrap { height: 220px; position: relative; margin-top: 1rem; }
+.section-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+.section-card h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 0.3rem; }
+.section-card p { color: var(--text2); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="sidebar-item" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item active" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Weekly Wellness Reports</h1>
+      <p>AI-generated summaries of your emotional journey each week.</p>
+    </div>
+
+    <div class="generate-banner">
+      <h3>📊 This Week's Report</h3>
+      <p>Generate your personalised wellness digest for the current week.</p>
+      <button class="btn btn-primary" id="generate-btn" onclick="generateReport()">Generate This Week's Report ✨</button>
+    </div>
+
+    <div class="section-card" id="trend-section" style="display:none">
+      <h3>📈 Mood Trend Across Weeks</h3>
+      <p>Average mood score per week over time.</p>
+      <div class="chart-wrap"><canvas id="trend-chart"></canvas></div>
+    </div>
+
+    <div id="reports-list"><div style="color:var(--text2);padding:1rem;font-size:0.9rem">Loading past reports...</div></div>
+  </main>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+function logout() { clearAuth(); window.location.href = '/'; }
+
+function renderReport(r, isCurrent = false) {
+  const weekEnd = new Date(r.week_start);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const moodClr = moodColor(r.avg_mood);
+  return `
+    <div class="report-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <div class="report-week">
+            Week of ${formatDate(r.week_start)} – ${formatDate(weekEnd.toISOString())}
+            ${isCurrent ? '<span class="current-badge">✦ This week</span>' : ''}
+          </div>
+        </div>
+        <div class="mood-chip" style="background:${moodClr}22;color:${moodClr};border:1px solid ${moodClr}44;display:inline-flex;align-items:center;gap:5px;font-size:0.82rem;font-weight:700;padding:4px 12px;border-radius:99px">
+          Avg Mood: ${r.avg_mood}/10
+        </div>
+      </div>
+      <div class="report-summary">${r.summary || 'No summary generated.'}</div>
+      <div class="report-stats">
+        <div class="report-stat">
+          <div class="report-stat-val" style="color:${moodClr}">${r.avg_mood}</div>
+          <div class="report-stat-lbl">Avg Mood</div>
+        </div>
+        <div class="report-stat">
+          <div class="report-stat-val" style="color:var(--purple)">${r.total_sessions}</div>
+          <div class="report-stat-lbl">Sessions</div>
+        </div>
+        <div class="report-stat">
+          <div class="report-stat-val" style="color:var(--accent)">${formatDate(r.generated_at)}</div>
+          <div class="report-stat-lbl">Generated</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function generateReport() {
+  const btn = document.getElementById('generate-btn');
+  btn.innerHTML = '<span class="spinner"></span> Guardian is writing your report...';
+  btn.disabled = true;
+  try {
+    const r = await apiFetch('/reports/weekly');
+    showToast('Weekly report generated! 📊');
+    await loadReports();
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+  btn.innerHTML = 'Generate This Week\'s Report ✨';
+  btn.disabled = false;
+}
+
+async function loadReports() {
+  const reports = await apiFetch('/reports/all');
+  const list = document.getElementById('reports-list');
+
+  if (!reports.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><h3>No reports yet</h3><p>Generate your first weekly report above!</p></div>';
+    return;
+  }
+
+  const today = new Date();
+  const monday = new Date(today); monday.setDate(today.getDate() - today.getDay() + 1);
+  const thisWeek = monday.toISOString().split('T')[0];
+
+  list.innerHTML = reports.map((r, i) => renderReport(r, r.week_start === thisWeek)).join('');
+
+  // Trend chart
+  if (reports.length > 1) {
+    document.getElementById('trend-section').style.display = 'block';
+    const sorted = [...reports].reverse();
+    const ctx = document.getElementById('trend-chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(r => r.week_start),
+        datasets: [{
+          label: 'Avg Mood',
+          data: sorted.map(r => r.avg_mood),
+          backgroundColor: sorted.map(r => moodColor(r.avg_mood) + '88'),
+          borderColor: sorted.map(r => moodColor(r.avg_mood)),
+          borderWidth: 2, borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          y: { min: 0, max: 10, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892a4' } },
+          x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8892a4' } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+}
+
+loadReports();
+</script>
+</body>
+</html>

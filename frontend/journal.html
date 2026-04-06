@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.journal-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem; }
+.entries-panel h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 1rem; }
+.entry-card { padding: 1.1rem 1.3rem; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; margin-bottom: 10px; }
+.entry-card:hover, .entry-card.selected { border-color: var(--accent-border); background: var(--accent-dim); }
+.entry-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 3px; }
+.entry-preview { font-size: 0.8rem; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.entry-date { font-size: 0.72rem; color: var(--text3); margin-top: 6px; }
+.write-panel { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+.write-panel h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 1rem; }
+.entry-view { display: none; }
+.entry-view.show { display: block; }
+.write-form { display: block; }
+.write-form.hide { display: none; }
+.ai-reflection { background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: var(--radius-sm); padding: 1.1rem; margin-top: 1.2rem; font-size: 0.9rem; line-height: 1.7; }
+.ai-reflection-label { font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.entry-content-display { font-size: 0.93rem; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+@media(max-width:768px){ .journal-layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="sidebar-item" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item active" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="page-header">
+      <h1>My Journal</h1>
+      <p>A private space for your thoughts. Calvira reflects on each entry with you.</p>
+    </div>
+
+    <div class="journal-layout">
+      <div class="entries-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+          <h3>Past Entries</h3>
+          <button class="btn btn-primary btn-sm" onclick="showWrite()">+ New Entry</button>
+        </div>
+        <div id="entries-list"><div style="color:var(--text2);font-size:0.9rem">Loading...</div></div>
+      </div>
+
+      <div class="write-panel">
+        <div class="write-form" id="write-form">
+          <h3>✍️ New Entry</h3>
+          <div class="form-group">
+            <label class="form-label">Title (optional)</label>
+            <input id="entry-title" class="form-input" type="text" placeholder="What's this entry about?">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your thoughts</label>
+            <textarea id="entry-content" class="form-textarea" rows="8" placeholder="Write freely... this is your private space. Guardian will read it with care and share a gentle reflection."></textarea>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button id="save-btn" class="btn btn-primary" onclick="saveEntry()">Save & Get Reflection 💚</button>
+            <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+          </div>
+        </div>
+
+        <div class="entry-view" id="entry-view">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;gap:1rem">
+            <div>
+              <h3 id="view-title" style="font-family:var(--serif);font-size:1.3rem"></h3>
+              <div id="view-date" style="font-size:0.78rem;color:var(--text2);margin-top:3px"></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-shrink:0">
+              <button class="btn btn-secondary btn-sm" onclick="showWrite()">+ New</button>
+              <button class="btn btn-danger btn-sm" id="delete-btn">🗑</button>
+            </div>
+          </div>
+          <div class="entry-content-display" id="view-content"></div>
+          <div class="ai-reflection" id="view-reflection" style="display:none">
+            <div class="ai-reflection-label">🧠 Calvira's Reflection</div>
+            <div id="view-reflection-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+function logout() { clearAuth(); window.location.href = '/'; }
+let currentEntryId = null;
+
+async function loadEntries() {
+  const entries = await apiFetch('/journal/entries');
+  const list = document.getElementById('entries-list');
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📓</div><h3>No entries yet</h3><p>Write your first journal entry!</p></div>';
+    return;
+  }
+  list.innerHTML = entries.map(e => `
+    <div class="entry-card ${e.id===currentEntryId?'selected':''}" onclick="viewEntry(${e.id})">
+      <div class="entry-title">${e.title || 'Untitled Entry'}</div>
+      <div class="entry-preview">${e.content}</div>
+      <div class="entry-date">${formatDate(e.created_at)} · Mood ${e.mood_score}/10</div>
+    </div>`).join('');
+}
+
+async function viewEntry(id) {
+  currentEntryId = id;
+  document.querySelectorAll('.entry-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`[onclick="viewEntry(${id})"]`)?.classList.add('selected');
+  const e = await apiFetch(`/journal/entry/${id}`);
+  document.getElementById('view-title').textContent = e.title || 'Untitled Entry';
+  document.getElementById('view-date').textContent = formatDate(e.created_at) + ' · Mood ' + e.mood_score + '/10';
+  document.getElementById('view-content').textContent = e.content;
+  if (e.ai_reflection) {
+    document.getElementById('view-reflection').style.display = 'block';
+    document.getElementById('view-reflection-text').textContent = e.ai_reflection;
+  } else { document.getElementById('view-reflection').style.display = 'none'; }
+  document.getElementById('delete-btn').onclick = () => deleteEntry(id);
+  document.getElementById('write-form').classList.add('hide');
+  document.getElementById('entry-view').classList.add('show');
+}
+
+async function saveEntry() {
+  const title = document.getElementById('entry-title').value.trim();
+  const content = document.getElementById('entry-content').value.trim();
+  if (!content) { showToast('Please write something first.', 'error'); return; }
+  const btn = document.getElementById('save-btn');
+  btn.innerHTML = '<span class="spinner"></span> Guardian is reflecting...'; btn.disabled = true;
+  try {
+    const e = await apiFetch('/journal/entry', { method: 'POST', body: JSON.stringify({ title, content }) });
+    showToast('Entry saved with reflection! 💚');
+    clearForm();
+    await loadEntries();
+    viewEntry(e.id);
+  } catch(err) { showToast(err.message, 'error'); }
+  btn.innerHTML = 'Save & Get Reflection 💚'; btn.disabled = false;
+}
+
+async function deleteEntry(id) {
+  if (!confirm('Delete this journal entry?')) return;
+  await apiFetch(`/journal/entry/${id}`, { method: 'DELETE' });
+  showToast('Entry deleted.');
+  currentEntryId = null;
+  document.getElementById('entry-view').classList.remove('show');
+  document.getElementById('write-form').classList.remove('hide');
+  loadEntries();
+}
+
+function showWrite() {
+  document.getElementById('entry-view').classList.remove('show');
+  document.getElementById('write-form').classList.remove('hide');
+  document.querySelectorAll('.entry-card').forEach(c => c.classList.remove('selected'));
+  currentEntryId = null;
+}
+
+function clearForm() {
+  document.getElementById('entry-title').value = '';
+  document.getElementById('entry-content').value = '';
+}
+
+loadEntries();
+</script>
+</body>
+</html>

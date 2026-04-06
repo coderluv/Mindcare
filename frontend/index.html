@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calvira — Your Mental Health Companion</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.hero { min-height: calc(100vh - 62px); display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 4rem 2rem; position: relative; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; pointer-events: none; }
+.orb1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(94,234,212,0.08), transparent 70%); top: -100px; right: -100px; }
+.orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(129,140,248,0.07), transparent 70%); bottom: -100px; left: -100px; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); font-size: 0.78rem; font-weight: 700; padding: 5px 16px; border-radius: 99px; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+.hero h1 { font-family: var(--serif); font-size: clamp(2.6rem, 5vw, 4.2rem); line-height: 1.1; margin-bottom: 1.2rem; max-width: 750px; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero p { color: var(--text2); font-size: 1.1rem; max-width: 520px; line-height: 1.8; margin-bottom: 2.5rem; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.features { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+.features-header { text-align: center; margin-bottom: 3rem; }
+.features-header h2 { font-family: var(--serif); font-size: 2.2rem; margin-bottom: 0.5rem; }
+.features-header p { color: var(--text2); }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.feat-card { padding: 1.8rem; border-radius: var(--radius); background: var(--glass); border: 1px solid var(--border); transition: all 0.3s; }
+.feat-card:hover { transform: translateY(-4px); border-color: var(--border2); background: var(--glass2); }
+.feat-icon { font-size: 2rem; margin-bottom: 1rem; }
+.feat-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+.feat-desc { color: var(--text2); font-size: 0.88rem; line-height: 1.7; }
+.cta-section { text-align: center; padding: 5rem 2rem; border-top: 1px solid var(--border); }
+.cta-section h2 { font-family: var(--serif); font-size: 2rem; margin-bottom: 1rem; }
+.cta-section p { color: var(--text2); margin-bottom: 2rem; }
+.footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); color: var(--text3); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/login">Sign In</a>
+    <a class="nav-link cta" href="/register">Get Started</a>
+  </div>
+</nav>
+<div class="page">
+  <section class="hero">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="hero-badge">🧠 AI-Powered Mental Health Support</div>
+    <h1>Your caring voice companion for <em>mental wellness</em></h1>
+    <p>Calvira listens, understands, and responds like a thoughtful friend — 24/7, private, and always here for you.</p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="/register">Start for Free</a>
+      <a class="btn btn-secondary" href="/login">Sign In</a>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-header">
+      <h2>Everything you need to feel better</h2>
+      <p>A complete mental wellness toolkit in one private space.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🎙️</div>
+        <div class="feat-title">Voice AI Chatbot</div>
+        <div class="feat-desc">Talk or type — Calvira responds with a warm, empathetic voice powered by advanced AI. It listens without judgment.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📅</div>
+        <div class="feat-title">Mood Calendar</div>
+        <div class="feat-desc">Track your emotional journey with a visual heatmap. Spot patterns, understand triggers, celebrate progress.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📓</div>
+        <div class="feat-title">Private Journal</div>
+        <div class="feat-desc">Write your thoughts freely. Calvira gives you a gentle AI reflection on each entry to deepen self-awareness.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Weekly Reports</div>
+        <div class="feat-desc">Get a personalised wellness digest every week — mood trends, highlights, and gentle suggestions for growth.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🚨</div>
+        <div class="feat-title">Crisis Detection</div>
+        <div class="feat-desc">Guardian automatically detects distress signals and instantly shows emergency helpline numbers for your country.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-title">100% Private</div>
+        <div class="feat-desc">Your conversations are encrypted. Your data belongs only to you. Calvira never shares anything.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Take the first step today</h2>
+    <p>Thousands of people use Guardian to feel heard, understood, and supported.</p>
+    <a class="btn btn-primary" href="/register">Create Your Free Account</a>
+  </section>
+
+  <footer class="footer">
+    <p>🧠 Calvira — A caring voice chatbot for private mental health support &amp; medical guidance.</p>
+    <p style="margin-top:6px">Built with ❤️</p>
+  </footer>
+</div>
+<script src="/static/js/api.js"></script>
+<script>redirectIfLoggedIn();</script>
+</body>
+</html>

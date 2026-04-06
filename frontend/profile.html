@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile & Settings — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.profile-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; }
+.profile-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+.avatar-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; color: var(--accent); font-family: var(--serif); margin: 0 auto 1rem; }
+.profile-name { text-align: center; font-family: var(--serif); font-size: 1.4rem; margin-bottom: 4px; }
+.profile-since { text-align: center; font-size: 0.82rem; color: var(--text2); margin-bottom: 1.5rem; }
+.profile-stat-row { display: flex; justify-content: space-around; padding: 1rem; background: var(--glass2); border-radius: var(--radius-sm); }
+.ps-item { text-align: center; }
+.ps-val { font-size: 1.4rem; font-weight: 700; font-family: var(--serif); color: var(--accent); }
+.ps-lbl { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.settings-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+.settings-card h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+.danger-zone { background: var(--red-dim); border: 1px solid var(--red-border); border-radius: var(--radius); padding: 1.5rem; margin-top: 1.5rem; }
+.danger-zone h3 { font-family: var(--serif); font-size: 1.1rem; color: var(--red); margin-bottom: 0.5rem; }
+.danger-zone p { color: var(--text2); font-size: 0.88rem; margin-bottom: 1rem; }
+@media(max-width:768px){ .profile-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="sidebar-item" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item active" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Profile & Settings</h1>
+      <p>Manage your Guardian account and preferences.</p>
+    </div>
+
+    <div class="profile-grid">
+      <div>
+        <div class="profile-card">
+          <div class="avatar-circle" id="avatar-initials">?</div>
+          <div class="profile-name" id="profile-name">Loading...</div>
+          <div class="profile-since" id="profile-since"></div>
+          <div class="profile-stat-row">
+            <div class="ps-item"><div class="ps-val" id="ps-sessions">—</div><div class="ps-lbl">Sessions</div></div>
+            <div class="ps-item"><div class="ps-val" id="ps-journal">—</div><div class="ps-lbl">Journals</div></div>
+            <div class="ps-item"><div class="ps-val" id="ps-mood">—</div><div class="ps-lbl">Avg Mood</div></div>
+          </div>
+        </div>
+
+        <div class="danger-zone" style="margin-top:1.5rem">
+          <h3>⚠️ Danger Zone</h3>
+          <p>Signing out will clear your session. Your data is safely stored in the database.</p>
+          <button class="btn btn-danger" onclick="logout()">🚪 Sign Out</button>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>⚙️ Update Preferences</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age Group</label>
+            <select id="age_group" class="form-select">
+              <option value="teen">Teen (13–17)</option>
+              <option value="adult">Adult (18–59)</option>
+              <option value="senior">Senior (60+)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select id="gender" class="form-select">
+              <option value="">Prefer not to say</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="nonbinary">Non-binary</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <select id="country" class="form-select">
+              <option value="India">India</option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="Australia">Australia</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Language</label>
+            <select id="language" class="form-select">
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Voice Preference</label>
+          <select id="voice_preference" class="form-select">
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="robotic">Robotic / Neutral</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="save-btn" onclick="saveProfile()">Save Preferences ✓</button>
+
+        <div class="divider"></div>
+        <h3 style="font-family:var(--serif);font-size:1.1rem;margin-bottom:1rem">🔑 Change Password</h3>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input id="new-password" class="form-input" type="password" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input id="confirm-password" class="form-input" type="password" placeholder="Repeat new password">
+        </div>
+        <button class="btn btn-secondary" onclick="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+function logout() { clearAuth(); window.location.href = '/'; }
+
+async function loadProfile() {
+  try {
+    const user = await apiFetch('/auth/me');
+    document.getElementById('avatar-initials').textContent = user.username[0].toUpperCase();
+    document.getElementById('profile-name').textContent = user.username;
+    document.getElementById('profile-since').textContent = 'Member since ' + formatDate(user.created_at);
+    ['age_group','gender','country','language','voice_preference'].forEach(k => {
+      const el = document.getElementById(k);
+      if (el) el.value = user[k] || '';
+    });
+    const stats = await apiFetch('/dashboard/stats');
+    document.getElementById('ps-sessions').textContent = stats.total_sessions;
+    document.getElementById('ps-journal').textContent = stats.journal_count;
+    document.getElementById('ps-mood').textContent = stats.avg_mood;
+  } catch(e) {}
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('save-btn');
+  btn.innerHTML = '<span class="spinner"></span> Saving...'; btn.disabled = true;
+  try {
+    await apiFetch('/profile/update', { method: 'PUT', body: JSON.stringify({
+      age_group: document.getElementById('age_group').value,
+      gender: document.getElementById('gender').value,
+      country: document.getElementById('country').value,
+      language: document.getElementById('language').value,
+      voice_preference: document.getElementById('voice_preference').value,
+    })});
+    showToast('Preferences saved! ✓');
+  } catch(e) { showToast(e.message, 'error'); }
+  btn.innerHTML = 'Save Preferences ✓'; btn.disabled = false;
+}
+
+function changePassword() {
+  const np = document.getElementById('new-password').value;
+  const cp = document.getElementById('confirm-password').value;
+  if (!np) { showToast('Please enter a new password.', 'error'); return; }
+  if (np !== cp) { showToast('Passwords do not match.', 'error'); return; }
+  if (np.length < 6) { showToast('Password must be at least 6 characters.', 'error'); return; }
+  showToast('Password change coming soon — contact admin to reset.', 'error');
+}
+
+loadProfile();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mood Tracker — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 1rem; }
+.cal-day-label { text-align: center; font-size: 0.72rem; color: var(--text2); font-weight: 700; padding: 4px 0; }
+.cal-day { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; cursor: default; transition: transform 0.15s; border: 1px solid var(--border); background: var(--glass); color: var(--text2); }
+.cal-day.has-data { cursor: pointer; color: var(--text); }
+.cal-day.has-data:hover { transform: scale(1.15); z-index: 1; }
+.cal-day.empty { background: transparent; border-color: transparent; }
+.legend { display: flex; align-items: center; gap: 8px; margin-top: 1rem; font-size: 0.78rem; color: var(--text2); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.chart-wrap { position: relative; height: 260px; margin-top: 1rem; }
+.section-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+.section-card h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 0.3rem; }
+.section-card p { color: var(--text2); font-size: 0.85rem; }
+.mood-tooltip { position: fixed; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.82rem; pointer-events: none; z-index: 999; display: none; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="sidebar-item" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Guardian</a>
+    <a class="sidebar-item active" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Mood Tracker</h1>
+      <p>Your emotional journey over the last 3 months.</p>
+    </div>
+
+    <div class="stat-grid" style="margin-bottom:2rem">
+      <div class="card stat-card card-p"><div class="stat-label">Avg Mood</div><div class="stat-value color-accent" id="avg-mood">—</div><div class="stat-sub">out of 10</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Best Day</div><div class="stat-value color-green" id="best-day">—</div><div class="stat-sub">highest score</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Active Days</div><div class="stat-value color-purple" id="active-days">—</div><div class="stat-sub">days tracked</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Trend</div><div class="stat-value color-amber" id="trend">—</div><div class="stat-sub">vs last week</div></div>
+    </div>
+
+    <div class="section-card">
+      <h3>📈 Mood Over Time</h3>
+      <p>Daily average mood score from your sessions.</p>
+      <div class="chart-wrap"><canvas id="mood-chart"></canvas></div>
+    </div>
+
+    <div class="section-card">
+      <h3>🗓️ Mood Calendar</h3>
+      <p>Each square = one day. Color shows your mood level.</p>
+      <div class="calendar-grid" id="cal-labels"></div>
+      <div class="calendar-grid" id="calendar"></div>
+      <div class="legend">
+        <span>Mood:</span>
+        <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div> Low (0–3)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> Okay (4–5)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> Good (6–7)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5eead4"></div> Great (8–10)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--glass3)"></div> No data</div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+<div class="mood-tooltip" id="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+function logout() { clearAuth(); window.location.href = '/'; }
+
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+async function loadMood() {
+  const data = await apiFetch('/mood/calendar');
+  if (!data.length) {
+    document.getElementById('calendar').innerHTML = '<div style="color:var(--text2);font-size:0.9rem;grid-column:1/-1;padding:2rem 0">No mood data yet. Start chatting with Guardian!</div>';
+    return;
+  }
+
+  const byDay = {};
+  data.forEach(d => { byDay[d.day] = d; });
+
+  const allScores = data.map(d => d.avg_mood);
+  const avg = (allScores.reduce((a,b)=>a+b,0)/allScores.length).toFixed(1);
+  const best = Math.max(...allScores).toFixed(1);
+  document.getElementById('avg-mood').textContent = avg;
+  document.getElementById('best-day').textContent = best;
+  document.getElementById('active-days').textContent = data.length;
+
+  const recent = data.slice(0,14);
+  const prev = data.slice(14,28);
+  const rAvg = recent.length ? recent.reduce((a,b)=>a+b.avg_mood,0)/recent.length : 5;
+  const pAvg = prev.length ? prev.reduce((a,b)=>a+b.avg_mood,0)/prev.length : 5;
+  const diff = rAvg - pAvg;
+  document.getElementById('trend').textContent = diff >= 0 ? `+${diff.toFixed(1)}` : diff.toFixed(1);
+  document.getElementById('trend').style.color = diff >= 0 ? 'var(--green)' : 'var(--red)';
+
+  // Chart
+  const sorted = [...data].reverse();
+  const ctx = document.getElementById('mood-chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: sorted.map(d => d.day),
+      datasets: [{
+        label: 'Mood Score',
+        data: sorted.map(d => d.avg_mood.toFixed(1)),
+        borderColor: '#5eead4', backgroundColor: 'rgba(94,234,212,0.08)',
+        borderWidth: 2, fill: true, tension: 0.4, pointRadius: 3,
+        pointBackgroundColor: '#5eead4',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { min: 0, max: 10, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892a4' } },
+        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8892a4', maxTicksLimit: 10 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Calendar
+  const labelsEl = document.getElementById('cal-labels');
+  labelsEl.innerHTML = DAYS.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  const calEl = document.getElementById('calendar');
+  const today = new Date();
+  const startDate = new Date(today); startDate.setDate(today.getDate() - 89);
+  const startDay = startDate.getDay();
+  let html = '';
+  for (let i = 0; i < startDay; i++) html += '<div class="cal-day empty"></div>';
+  for (let i = 0; i < 90; i++) {
+    const d = new Date(startDate); d.setDate(startDate.getDate() + i);
+    const key = d.toISOString().split('T')[0];
+    const rec = byDay[key];
+    const day = d.getDate();
+    if (rec) {
+      const color = rec.avg_mood >= 8 ? '#5eead4' : rec.avg_mood >= 6 ? '#34d399' : rec.avg_mood >= 4 ? '#fbbf24' : '#f87171';
+      const opacity = 0.3 + (rec.avg_mood / 10) * 0.7;
+      html += `<div class="cal-day has-data" style="background:${color};opacity:${opacity};" 
+        onmouseenter="showTip(event,'${key}',${rec.avg_mood.toFixed(1)},${rec.count})"
+        onmouseleave="hideTip()">${day}</div>`;
+    } else {
+      html += `<div class="cal-day">${day}</div>`;
+    }
+  }
+  calEl.innerHTML = html;
+}
+
+function showTip(e, day, mood, count) {
+  const tip = document.getElementById('tooltip');
+  tip.innerHTML = `<strong>${day}</strong><br>Mood: ${mood}/10<br>${count} message${count>1?'s':''}`;
+  tip.style.display = 'block'; tip.style.left = (e.pageX + 12) + 'px'; tip.style.top = (e.pageY - 40) + 'px';
+}
+function hideTip() { document.getElementById('tooltip').style.display = 'none'; }
+
+loadMood();
+</script>
+</body>
+</html>

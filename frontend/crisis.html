@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crisis Help — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.crisis-hero { background: linear-gradient(135deg, rgba(248,113,113,0.08), rgba(251,191,36,0.05)); border: 1px solid rgba(248,113,113,0.25); border-radius: var(--radius); padding: 2.5rem; text-align: center; margin-bottom: 2rem; }
+.crisis-hero h2 { font-family: var(--serif); font-size: 1.9rem; margin-bottom: 0.5rem; }
+.crisis-hero p { color: var(--text2); font-size: 1rem; line-height: 1.7; max-width: 560px; margin: 0 auto 1.5rem; }
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.filter-btn { padding: 6px 16px; border-radius: 99px; border: 1px solid var(--border); background: var(--glass); color: var(--text2); font-family: var(--font); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+.helplines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.helpline-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: all 0.25s; }
+.helpline-card:hover { border-color: var(--border2); transform: translateY(-2px); background: var(--glass2); }
+.hl-country { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 8px; }
+.hl-name { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+.hl-number { font-size: 1.4rem; font-weight: 800; font-family: var(--serif); color: var(--accent); margin: 8px 0; }
+.hl-desc { font-size: 0.82rem; color: var(--text2); }
+.hl-call-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 7px 16px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+.hl-call-btn:hover { background: rgba(94,234,212,0.2); text-decoration: none; }
+.tips-section { margin-top: 2rem; }
+.tips-section h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 1rem; }
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.tip-card { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.2rem; }
+.tip-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.tip-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.tip-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="sidebar-item" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item active" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="crisis-hero">
+      <div style="font-size:2.5rem;margin-bottom:0.8rem">🚨</div>
+      <h2>You are not alone</h2>
+      <p>If you are in crisis or experiencing thoughts of self-harm, please reach out to a helpline immediately. Trained counsellors are available 24/7 and are here to help.</p>
+      <a class="btn btn-primary" href="/chat">Talk to Calvira Now 🧠</a>
+    </div>
+
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" onclick="filterCountry('All', this)">All Countries</button>
+    </div>
+
+    <div class="helplines-grid" id="helplines-grid">
+      <div style="color:var(--text2)">Loading helplines...</div>
+    </div>
+
+    <div class="tips-section">
+      <h3>🌿 Coping Strategies for Right Now</h3>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-icon">🌬️</div>
+          <div class="tip-title">Box Breathing</div>
+          <div class="tip-desc">Inhale for 4 counts, hold for 4, exhale for 4, hold for 4. Repeat 4 times to calm your nervous system.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🖐️</div>
+          <div class="tip-title">5-4-3-2-1 Grounding</div>
+          <div class="tip-desc">Name 5 things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste. Brings you to the present moment.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">💧</div>
+          <div class="tip-title">Splash Cold Water</div>
+          <div class="tip-desc">Splash cold water on your face or hold ice — it activates the dive reflex and slows your heart rate quickly.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🤝</div>
+          <div class="tip-title">Reach Out</div>
+          <div class="tip-desc">Call or text someone you trust. You don't have to explain everything — just say "I need someone to talk to."</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🚶</div>
+          <div class="tip-title">Move Your Body</div>
+          <div class="tip-desc">A short walk, even around the room, can shift your emotional state. Movement is medicine for the mind.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">✍️</div>
+          <div class="tip-title">Write It Out</div>
+          <div class="tip-desc">Write down exactly what you're feeling without judgment. Externalising thoughts reduces their intensity.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+function logout() { clearAuth(); window.location.href = '/'; }
+
+let allResources = [];
+let activeCountry = 'All';
+
+async function loadCrisis() {
+  const data = await apiFetch('/crisis/resources');
+  allResources = data.resources;
+
+  const countries = ['All', ...new Set(allResources.map(r => r.country))];
+  const filterBar = document.getElementById('filter-bar');
+  filterBar.innerHTML = countries.map(c =>
+    `<button class="filter-btn ${c==='All'?'active':''}" onclick="filterCountry('${c}', this)">${c}</button>`
+  ).join('');
+
+  renderHelplines(allResources);
+}
+
+function filterCountry(country, btn) {
+  activeCountry = country;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = country === 'All' ? allResources : allResources.filter(r => r.country === country);
+  renderHelplines(filtered);
+}
+
+function renderHelplines(resources) {
+  document.getElementById('helplines-grid').innerHTML = resources.map(r => `
+    <div class="helpline-card">
+      <div class="hl-country">🌍 ${r.country}</div>
+      <div class="hl-name">${r.name}</div>
+      <div class="hl-number">${r.number}</div>
+      <div class="hl-desc">${r.desc}</div>
+      <a class="hl-call-btn" href="tel:${r.number.replace(/\s/g,'')}">📞 Call Now</a>
+    </div>`).join('');
+}
+
+loadCrisis();
+</script>
+</body>
+</html>

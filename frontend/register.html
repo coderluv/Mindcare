@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.auth-wrap { min-height: calc(100vh - 62px); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.auth-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 460px; }
+.auth-logo { text-align: center; font-family: var(--serif); font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+.auth-card h2 { font-family: var(--serif); font-size: 1.7rem; margin-bottom: 4px; text-align: center; }
+.auth-sub { color: var(--text2); font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+.auth-switch { text-align: center; margin-top: 1.2rem; color: var(--text2); font-size: 0.9rem; }
+.step { display: none; } .step.active { display: block; }
+.step-indicator { display: flex; gap: 8px; margin-bottom: 1.5rem; justify-content: center; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); transition: all 0.3s; }
+.step-dot.active { background: var(--accent); transform: scale(1.3); }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/login">Sign In</a>
+  </div>
+</nav>
+<div class="page">
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">🛡️</div>
+    <h2>Create your account</h2>
+    <p class="auth-sub">Join Calvira — your private mental wellness companion.</p>
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+    </div>
+    <div id="error-msg" style="display:none;background:var(--red-dim);border:1px solid var(--red-border);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:0.88rem;margin-bottom:1rem;"></div>
+
+    <div class="step active" id="step1">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input id="username" class="form-input" type="text" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="password" class="form-input" type="password" placeholder="At least 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input id="confirm" class="form-input" type="password" placeholder="Repeat your password">
+      </div>
+      <button id="next-btn" class="btn btn-primary btn-full">Continue →</button>
+    </div>
+
+    <div class="step" id="step2">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Age Group</label>
+          <select id="age_group" class="form-select">
+            <option value="teen">Teen (13–17)</option>
+            <option value="adult" selected>Adult (18–59)</option>
+            <option value="senior">Senior (60+)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select id="gender" class="form-select">
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <select id="country" class="form-select">
+            <option value="India">India</option>
+            <option value="USA">USA</option>
+            <option value="UK">UK</option>
+            <option value="Australia">Australia</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Language</label>
+          <select id="language" class="form-select">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Voice Preference</label>
+        <select id="voice_preference" class="form-select">
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="robotic">Robotic / Neutral</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="back-btn" class="btn btn-secondary" style="flex:0.5">← Back</button>
+        <button id="register-btn" class="btn btn-primary" style="flex:1">Create Account 🛡️</button>
+      </div>
+    </div>
+    <p class="auth-switch">Already have an account? <a href="/login">Sign in</a></p>
+  </div>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+redirectIfLoggedIn();
+document.getElementById('next-btn').addEventListener('click', () => {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const c = document.getElementById('confirm').value;
+  const err = document.getElementById('error-msg');
+  if (!u || !p) { err.textContent = 'Please fill in username and password.'; err.style.display='block'; return; }
+  if (p.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display='block'; return; }
+  if (p !== c) { err.textContent = 'Passwords do not match.'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('dot1').classList.remove('active');
+  document.getElementById('dot2').classList.add('active');
+});
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('dot2').classList.remove('active');
+  document.getElementById('dot1').classList.add('active');
+});
+document.getElementById('register-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('register-btn');
+  const err = document.getElementById('error-msg');
+  btn.innerHTML = '<span class="spinner"></span> Creating...'; btn.disabled = true;
+  try {
+    const data = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({
+      username: document.getElementById('username').value.trim(),
+      password: document.getElementById('password').value,
+      age_group: document.getElementById('age_group').value,
+      gender: document.getElementById('gender').value,
+      country: document.getElementById('country').value,
+      language: document.getElementById('language').value,
+      voice_preference: document.getElementById('voice_preference').value,
+    })});
+    setAuth(data.token, { username: data.username, user_id: data.user_id });
+    window.location.href = '/dashboard';
+  } catch(e) {
+    err.textContent = e.message; err.style.display='block';
+    btn.innerHTML = 'Create Account 🧠'; btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

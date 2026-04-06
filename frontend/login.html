@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.auth-wrap { min-height: calc(100vh - 62px); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.auth-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 420px; }
+.auth-logo { text-align: center; font-family: var(--serif); font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+.auth-card h2 { font-family: var(--serif); font-size: 1.7rem; margin-bottom: 4px; text-align: center; }
+.auth-sub { color: var(--text2); font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+.auth-switch { text-align: center; margin-top: 1.2rem; color: var(--text2); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <div class="nav-links">
+    <a class="nav-link" href="/register">Create Account</a>
+  </div>
+</nav>
+<div class="page">
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">🧠</div>
+    <h2>Welcome back</h2>
+    <p class="auth-sub">Sign in to continue your wellness journey.</p>
+    <div id="error-msg" style="display:none;background:var(--red-dim);border:1px solid var(--red-border);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:0.88rem;margin-bottom:1rem;"></div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input id="username" class="form-input" type="text" placeholder="Your username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input id="password" class="form-input" type="password" placeholder="Your password" autocomplete="current-password">
+    </div>
+    <button id="login-btn" class="btn btn-primary btn-full" style="margin-top:0.5rem">Sign In</button>
+    <p class="auth-switch">Don't have an account? <a href="/register">Create one free</a></p>
+  </div>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+redirectIfLoggedIn();
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl = document.getElementById('error-msg');
+  const btn = document.getElementById('login-btn');
+  if (!username || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+  btn.innerHTML = '<span class="spinner"></span> Signing in...'; btn.disabled = true;
+  try {
+    const data = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+    setAuth(data.token, { username: data.username, user_id: data.user_id });
+    window.location.href = '/dashboard';
+  } catch(e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+    btn.innerHTML = 'Sign In'; btn.disabled = false;
+  }
+});
+document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-btn').click(); });
+</script>
+</body>
+</html>

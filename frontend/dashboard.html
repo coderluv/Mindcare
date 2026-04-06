@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Calvira</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<style>
+.welcome-banner { background: linear-gradient(135deg, rgba(94,234,212,0.1), rgba(129,140,248,0.08)); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.welcome-text h2 { font-family: var(--serif); font-size: 1.7rem; margin-bottom: 4px; }
+.welcome-text p { color: var(--text2); font-size: 0.93rem; }
+.quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 2rem; }
+.quick-card { padding: 1.4rem; border-radius: var(--radius); background: var(--glass); border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; text-decoration: none; display: block; }
+.quick-card:hover { transform: translateY(-3px); border-color: var(--border2); background: var(--glass2); text-decoration: none; }
+.quick-card .qc-icon { font-size: 1.6rem; margin-bottom: 0.7rem; }
+.quick-card .qc-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; color: var(--text); }
+.quick-card .qc-desc { color: var(--text2); font-size: 0.82rem; }
+.section-title { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 1rem; }
+.sessions-list { display: flex; flex-direction: column; gap: 10px; }
+.session-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; border-radius: var(--radius-sm); background: var(--glass); border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+.session-item:hover { background: var(--glass2); border-color: var(--border2); }
+.session-left { display: flex; flex-direction: column; gap: 3px; }
+.session-date { font-size: 0.88rem; font-weight: 600; }
+.session-meta { font-size: 0.78rem; color: var(--text2); }
+.mood-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media(max-width:700px){ .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-logo" href="/"><span>🛡️</span> Calvira</a>
+  <div class="nav-links">
+    <span id="nav-user" style="color:var(--text2);font-size:0.88rem;margin-right:8px"></span>
+    <button class="nav-link" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="page">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">Menu</div>
+    <a class="sidebar-item active" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
+    <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
+    <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
+    <a class="sidebar-item" href="/crisis"><span class="icon">🚨</span> Crisis Help</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-item" href="/profile"><span class="icon">⚙️</span> Settings</a>
+      <button class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Sign Out</button>
+    </div>
+  </aside>
+  <main class="main-content">
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2 id="greeting">Good morning 👋</h2>
+        <p>How are you feeling today? Calvira is here whenever you need to talk.</p>
+      </div>
+      <a class="btn btn-primary" href="/chat">Start a Session 🎙️</a>
+    </div>
+
+    <div class="stat-grid" id="stats-grid">
+      <div class="card stat-card card-p"><div class="stat-label">Total Sessions</div><div class="stat-value color-accent" id="stat-sessions">—</div><div class="stat-sub">conversations</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Messages Sent</div><div class="stat-value color-purple" id="stat-messages">—</div><div class="stat-sub">total entries</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Avg Mood</div><div class="stat-value color-amber" id="stat-mood">—</div><div class="stat-sub">out of 10</div></div>
+      <div class="card stat-card card-p"><div class="stat-label">Journal Entries</div><div class="stat-value color-pink" id="stat-journal">—</div><div class="stat-sub">written</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title">Recent Sessions</div>
+        <div class="sessions-list" id="sessions-list">
+          <div style="color:var(--text2);font-size:0.9rem">Loading...</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-actions">
+          <a class="quick-card" href="/chat"><div class="qc-icon">💬</div><div class="qc-title">Talk to Guardian</div><div class="qc-desc">Start a new voice or text session</div></a>
+          <a class="quick-card" href="/journal"><div class="qc-icon">📓</div><div class="qc-title">Write in Journal</div><div class="qc-desc">Capture your thoughts</div></a>
+          <a class="quick-card" href="/mood"><div class="qc-icon">📅</div><div class="qc-title">View Mood Map</div><div class="qc-desc">See your emotional patterns</div></a>
+          <a class="quick-card" href="/reports"><div class="qc-icon">📊</div><div class="qc-title">Weekly Report</div><div class="qc-desc">Your wellness digest</div></a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<script src="/static/js/api.js"></script>
+<script>
+if (!requireAuth()) {}
+const user = getUser();
+document.getElementById('nav-user').textContent = user.username || '';
+const h = new Date().getHours();
+document.getElementById('greeting').textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ' ' + (user.username||'') + ' 👋';
+
+async function loadDashboard() {
+  try {
+    const stats = await apiFetch('/dashboard/stats');
+    document.getElementById('stat-sessions').textContent = stats.total_sessions;
+    document.getElementById('stat-messages').textContent = stats.total_messages;
+    document.getElementById('stat-mood').textContent = stats.avg_mood;
+    document.getElementById('stat-journal').textContent = stats.journal_count;
+  } catch(e) {}
+
+  try {
+    const sessions = await apiFetch('/chat/sessions');
+    const list = document.getElementById('sessions-list');
+    if (!sessions.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><h3>No sessions yet</h3><p>Start your first conversation with Guardian.</p></div>';
+      return;
+    }
+    list.innerHTML = sessions.slice(0,6).map(s => {
+      const mood = s.avg_mood ? s.avg_mood.toFixed(1) : '—';
+      const color = s.avg_mood ? moodColor(s.avg_mood) : 'var(--text2)';
+      return `<div class="session-item" onclick="window.location='/chat?session=${s.id}'">
+        <div class="session-left">
+          <div class="session-date">${formatDate(s.started_at)}</div>
+          <div class="session-meta">${s.message_count || 0} messages · ${formatTime(s.started_at)}</div>
+        </div>
+        <div class="mood-chip" style="background:${color}22;color:${color};border:1px solid ${color}44">
+          ${mood}/10
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+function logout() { clearAuth(); window.location.href = '/'; }
+loadDashboard();
+</script>
+</body>
+</html>
