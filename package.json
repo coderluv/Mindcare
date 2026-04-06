@@ -1,0 +1,5 @@
+"scripts": {
+  "build": "next build",   // Next.js
+  "build": "react-scripts build",  // Create React App
+  "build": "vite build"   // Vite
+}
