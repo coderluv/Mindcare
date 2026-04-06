@@ -1,6 +1,6 @@
 #!/bin/bash
 echo ""
-echo "🛡️  Starting Guardian — Mental Health Companion"
+echo "🛡️  Starting Calvira — Mental Health Companion"
 echo "================================================"
 echo ""
 
