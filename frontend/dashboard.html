@@ -4,6 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Mindcare</title>
 <link rel="stylesheet" href="/static/css/base.css">
+<script src="/static/js/api.js"></script>
 <style>
 .welcome-banner { background: linear-gradient(135deg, rgba(94,234,212,0.1), rgba(129,140,248,0.08)); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .welcome-text h2 { font-family: var(--serif); font-size: 1.7rem; margin-bottom: 4px; }
@@ -85,7 +86,6 @@
   </main>
 </div>
 </div>
-<script src="/static/js/api.js"></script>
 <script>
 if (!requireAuth()) {}
 const user = getUser();
