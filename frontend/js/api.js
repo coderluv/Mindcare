@@ -1,14 +1,14 @@
 const API = window.location.origin;
 
-function getToken() { return localStorage.getItem('guardian_token'); }
-function getUser()  { return JSON.parse(localStorage.getItem('guardian_user') || '{}'); }
+function getToken() { return localStorage.getItem('mindcare_token'); }
+function getUser()  { return JSON.parse(localStorage.getItem('mindcare_user') || '{}'); }
 function setAuth(token, user) {
-  localStorage.setItem('guardian_token', token);
-  localStorage.setItem('guardian_user', JSON.stringify(user));
+  localStorage.setItem('mindcare_token', token);
+  localStorage.setItem('mindcare_user', JSON.stringify(user));
 }
 function clearAuth() {
-  localStorage.removeItem('guardian_token');
-  localStorage.removeItem('guardian_user');
+  localStorage.removeItem('mindcare_token');
+  localStorage.removeItem('mindcare_user');
 }
 function requireAuth() {
   if (!getToken()) { window.location.href = '/login'; return false; }
