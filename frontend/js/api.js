@@ -1,4 +1,4 @@
-const API = 'http://localhost:8000';
+const API = window.location.origin;
 
 function getToken() { return localStorage.getItem('guardian_token'); }
 function getUser()  { return JSON.parse(localStorage.getItem('guardian_user') || '{}'); }
