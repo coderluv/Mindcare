@@ -15,7 +15,7 @@
 
 ```bash
 # Clone / extract the project folder, then:
-cd guardian
+cd backend
 
 # Set your Groq API key
 export GROQ_API_KEY=your_groq_api_key_here
