@@ -30,7 +30,7 @@ cd guardian
 pip install fastapi uvicorn "python-jose[cryptography]" "passlib[bcrypt]" python-multipart httpx
 cd backend
 export GROQ_API_KEY=your_key_here
-python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 3. Open in Browser
