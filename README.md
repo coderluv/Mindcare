@@ -1,4 +1,4 @@
-# 🧠 Calvira — Mental Health Support Platform
+# 🧠 Mindcare — Mental Health Support Platform
 
 > A Caring Voice Chatbot for Private Mental Health Support and Medical Guidance  
 > Built by **Lakshya Lathi** | Engineering College Ajmer
@@ -26,7 +26,7 @@ bash start.sh
 
 Or manually:
 ```bash
-cd guardian
+cd Mindcare
 pip install fastapi uvicorn "python-jose[cryptography]" "passlib[bcrypt]" python-multipart httpx
 cd backend
 export GROQ_API_KEY=your_key_here
@@ -41,7 +41,7 @@ Visit: **http://localhost:8000**
 ## 📁 Project Structure
 
 ```
-guardian/
+mindcare/
 ├── backend/
 │   ├── main.py          ← FastAPI app (all routes)
 │   ├── database.py      ← SQLite setup (5 tables)
@@ -160,7 +160,7 @@ GET  /dashboard/stats      Stats summary
 
 ## 📝 Notes
 
-- The database (`calvira.db`) is created automatically on first run
+- The database (`mindcare.db`) is created automatically on first run
 - All passwords are hashed with bcrypt — never stored in plain text
 - JWT tokens expire after 7 days
 - Crisis detection uses keyword matching on user messages

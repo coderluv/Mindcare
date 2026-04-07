@@ -1,6 +1,6 @@
 import sqlite3, os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "calvira.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "mindcare.db")
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)

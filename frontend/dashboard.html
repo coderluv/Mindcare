@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Calvira</title>
+<title>Dashboard — Mindcare</title>
 <link rel="stylesheet" href="/static/css/base.css">
 <style>
 .welcome-banner { background: linear-gradient(135deg, rgba(94,234,212,0.1), rgba(129,140,248,0.08)); border: 1px solid var(--accent-border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
@@ -28,7 +28,7 @@
 </head>
 <body>
 <nav class="nav">
-  <a class="nav-logo" href="/"><span>🧠</span> Calvira</a>
+  <a class="nav-logo" href="/"><span>🧠</span> Mindcare</a>
   <div class="nav-links">
     <span id="nav-user" style="color:var(--text2);font-size:0.88rem;margin-right:8px"></span>
     <button class="nav-link" onclick="logout()">Sign Out</button>
@@ -39,7 +39,7 @@
   <aside class="sidebar">
     <div class="sidebar-label">Menu</div>
     <a class="sidebar-item active" href="/dashboard"><span class="icon">🏠</span> Dashboard</a>
-    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Calvira</a>
+    <a class="sidebar-item" href="/chat"><span class="icon">💬</span> Chat with Mindcare</a>
     <a class="sidebar-item" href="/mood"><span class="icon">📅</span> Mood Tracker</a>
     <a class="sidebar-item" href="/journal"><span class="icon">📓</span> Journal</a>
     <a class="sidebar-item" href="/reports"><span class="icon">📊</span> Weekly Reports</a>
@@ -53,7 +53,7 @@
     <div class="welcome-banner">
       <div class="welcome-text">
         <h2 id="greeting">Good morning 👋</h2>
-        <p>How are you feeling today? Calvira is here whenever you need to talk.</p>
+        <p>How are you feeling today? Mindcare is here whenever you need to talk.</p>
       </div>
       <a class="btn btn-primary" href="/chat">Start a Session 🎙️</a>
     </div>
@@ -75,7 +75,7 @@
       <div>
         <div class="section-title">Quick Actions</div>
         <div class="quick-actions">
-          <a class="quick-card" href="/chat"><div class="qc-icon">💬</div><div class="qc-title">Talk to Calvira</div><div class="qc-desc">Start a new voice or text session</div></a>
+          <a class="quick-card" href="/chat"><div class="qc-icon">💬</div><div class="qc-title">Talk to Mindcare</div><div class="qc-desc">Start a new voice or text session</div></a>
           <a class="quick-card" href="/journal"><div class="qc-icon">📓</div><div class="qc-title">Write in Journal</div><div class="qc-desc">Capture your thoughts</div></a>
           <a class="quick-card" href="/mood"><div class="qc-icon">📅</div><div class="qc-title">View Mood Map</div><div class="qc-desc">See your emotional patterns</div></a>
           <a class="quick-card" href="/reports"><div class="qc-icon">📊</div><div class="qc-title">Weekly Report</div><div class="qc-desc">Your wellness digest</div></a>
