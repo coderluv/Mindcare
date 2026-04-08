@@ -1,6 +1,6 @@
 #!/bin/bash
 echo ""
-echo "Starting Calvira — Mental Health Companion"
+echo "Starting Mindcare — Mental Health Companion"
 echo "================================================"
 echo ""
 
