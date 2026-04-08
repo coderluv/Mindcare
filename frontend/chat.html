@@ -147,7 +147,7 @@ async function loadSessions() {
     list.innerHTML = sessions.map(s => `
       <div class="sess-item ${s.id === currentSessionId ? 'active' : ''}" onclick="loadSession(${s.id})">
         <div class="sess-date">${formatDate(s.started_at)}</div>
-        <div class="sess-meta">${s.message_count||0} msgs · ${formatTime(s.started_at)}</div>
+        <div class="sess-meta">${s.message_count || 0} msgs · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</div>
       </div>`).join('');
   } catch(e) {}
 }
